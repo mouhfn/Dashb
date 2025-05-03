@@ -75,7 +75,7 @@ fig.update_layout(title="📈 Charge Cumulée Planifiée vs Réelle",
                   legend=dict(orientation="h", y=-0.2))
 
 # --------------------- CURRENT HOUR INFO ---------------------
-now = datetime.datetime.now()
+now = datetime.datetime.now() + datetime.timedelta(hours=1)
 current_hour = now.hour
 matching_index = next((i for i, h in enumerate(hours)
                        if re.search(r'\d+', h) and int(re.search(r'\d+', h).group()) == current_hour), -1)
