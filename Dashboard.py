@@ -217,6 +217,12 @@ print(loading_data)
 # Afficher les données dans le tableau de bord
 page = st.sidebar.selectbox(
     "Navigation",
+    ["Suivi de chargement", "Planification", "Stock","Navires en Rade","CTE"]
+)
+
+# Vue 1 : Suivi de chargement
+# Vue 1 : Suivi de chargement
+# Vue 1 : Suivi de chargement
 if page == "Suivi de chargement":
     st.markdown(
     f"""
@@ -282,9 +288,3 @@ if page == "Suivi de chargement":
                         st.progress(progress)
                         st.markdown(f'<div style="font-size:14px; text-align:center;">{percentage:.2f}% Chargé| Source de chargement actuel  🏗️ : {stats["Source"]}</div>', unsafe_allow_html=True)
                 st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
-    ["Suivi de chargement", "Planification", "Stock","Navires en Rade","CTE"]
-)
-
-# Vue 1 : Suivi de chargement
-# Vue 1 : Suivi de chargement
-# Vue 1 : Suivi de chargement
