@@ -11,7 +11,8 @@ import openpyxl
 import pandas as pd
 import re
 from datetime import datetime, time, timedelta
-st.autorefresh(interval=10000, limit=None, key="auto_refresh")
+
+
 
 def normalize_product_name(name):
     if not name:
@@ -168,7 +169,9 @@ sheet_name = effective_date.strftime("%d-%m-%Y")
 # Nouvelle version utilisant le lien en ligne
 excel_url = "https://eocp-my.sharepoint.com/personal/mouad_elhafiani_ocpgroup_ma/_layouts/15/download.aspx?share=EW83yQHE4YdElMWYtV52Ii0BNrLL5-3KGGclpOgKaRA7UA"
 
-
+# Bouton pour rafraîchir les données (relance l'application)
+if st.button("🔄 Rafraîchir les données"):
+    st.rerun()
 
 # Charger le fichier Excel via le lien en ligne
 xls = pd.ExcelFile(excel_url)
@@ -245,52 +248,107 @@ if page == "Suivi de chargement":
 
 
     # Diviser la page en deux colonnes : Quai 1 (gauche) et Quai 2 (droite)
-    col1, col2 = st.columns(2)
+ # Diviser la page en trois colonnes : col1, separation (sep_col) et col2
+cols = st.columns([1, 0.05, 1])
 
-    # Afficher les quais de gauche (1NORD, 1BIS, 1TER)
-    with col1:
-        st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 1</h4>', unsafe_allow_html=True)
-        for quai, info in loading_data.items():
-            if quai.startswith("1"):  # Filtrer les quais de gauche
-                # Vérifier si le quai a un navire
-                if not info["ship"] or pd.isna(info["ship"]):  # Si pas de navire
-                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>', unsafe_allow_html=True)
-                    for product, stats in info["products"].items():
-                        progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
-                        percentage = progress * 100
-                        source = stats["Source"]
-                        if source == "JFC1":
-                            color = "#FFEB3B"  # Jaune
-                        elif source == "JFC2":
-                           color = "#FFEB3B"  # Gris
-                        elif source == "JLN":
-                           color = "#FFEB3B"  # Jaune
-                        else:
-                           color = "#4CAF50"
-                        st.markdown(f'<div style="font-size:14px;">🔸 Qualité 🌾 : {product} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>', unsafe_allow_html=True)
-                        st.progress(progress)
-                    
-                        st.markdown(f'<div style="font-size:14px; text-align:center;">{percentage:.2f}% Chargé| Source de chargement actuel  🏗️ : {stats["Source"]}</div>', unsafe_allow_html=True)
-                        
-                st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
+# Affichage pour la colonne 1 (Quais 1)
+with cols[0]:
+    st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 1</h4>', unsafe_allow_html=True)
+    for quai, info in loading_data.items():
+        if quai.startswith("1"):  # Filtrer les quais de gauche
+            st.markdown("<hr style='border-top:3px solid #000; margin:15px 0;'>", unsafe_allow_html=True)
+            if not info["ship"] or pd.isna(info["ship"]):
+                st.markdown(
+                    f'<div style="font-size:20px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    f'<div style="font-size:20px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>',
+                    unsafe_allow_html=True,
+                )
+                for product, stats in info["products"].items():
+                    progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
+                    percentage = progress * 100
 
-    # Afficher les quais de droite (2NORD, 2SUD, 2BIS, 2TER)
-    with col2:
-        st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 2</h4>', unsafe_allow_html=True)
-        for quai, info in loading_data.items():
-            if quai.startswith("2"):  # Filtrer les quais de gauche
-                # Vérifier si le quai a un navire
-                if not info["ship"] or pd.isna(info["ship"]):  # Si pas de navire
-                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>', unsafe_allow_html=True)
-                    for product, stats in info["products"].items():
-                        progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
-                        percentage = progress * 100
-                        
-                        st.markdown(f'<div style="font-size:14px;">🔸 Qualité 🌾 : {product} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>', unsafe_allow_html=True)
-                        st.progress(progress)
-                        st.markdown(f'<div style="font-size:14px; text-align:center;">{percentage:.2f}% Chargé| Source de chargement actuel  🏗️ : {stats["Source"]}</div>', unsafe_allow_html=True)
-                st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
+                    # Display product name with green color
+                    product_html = f'<span style="color:green;">Qualité 🌾 : {product}</span>'
+
+                    # Set color for the source cube based on the source name
+                    source = stats["Source"]
+                    if source == "HE2":
+                        cube_color = "#FF5722"  # Orange, for example
+                    elif source == "JFC1":
+                        cube_color = "#FFEB3B"  # Yellow
+                    elif source == "JFC2":
+                        cube_color = "#B0BEC5"  # Gray
+                    elif source == "JLN":
+                        cube_color = "#03A9F4"  # Blue
+                    else:
+                        cube_color = "#4CAF50"  # Default green
+
+                    # Create the colored cube for the source
+                    source_html = f'<span style="background-color:{cube_color}; display:inline-block; width:20px; height:20px; margin-right:5px;"></span>{source}'
+
+                    st.markdown(
+                        f'<div style="font-size:18px; font-weight:bold;">🔸 {product_html} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>',
+                        unsafe_allow_html=True,
+                    )
+                    st.progress(progress)
+                    st.markdown(
+                        f'<div style="font-size:18px; font-weight:bold; text-align:center;">{percentage:.2f}% Chargé | Source de chargement actuel 🏗️ : {source_html}</div>',
+                        unsafe_allow_html=True,
+                    )
+
+# Colonne de séparation
+with cols[1]:
+    st.markdown("<div style='border-left: 3px solid blue; height:100vh;'></div>", unsafe_allow_html=True)
+
+# Affichage pour la colonne 2 (Quais 2)
+with cols[2]:
+    st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 2</h4>', unsafe_allow_html=True)
+    for quai, info in loading_data.items():
+        if quai.startswith("2"):  # Filtrer les quais pour la colonne de droite
+            st.markdown("<hr style='border-top:3px solid #000; margin:15px 0;'>", unsafe_allow_html=True)
+            if not info["ship"] or pd.isna(info["ship"]):
+                st.markdown(
+                    f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    f'<div style="font-size:20px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>',
+                    unsafe_allow_html=True,
+                )
+                for product, stats in info["products"].items():
+                    progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
+                    percentage = progress * 100
+
+                    # Display product name with green color
+                    product_html = f'<span style="color:green;">Qualité 🌾 : {product}</span>'
+
+                    # Set color for the source cube based on the source name
+                    source = stats["Source"]
+                    if source == "HE2":
+                        cube_color = "#FF5722"  # Orange, for example
+                    elif source == "JFC1":
+                        cube_color = "#FFEB3B"  # Yellow
+                    elif source == "JFC2":
+                        cube_color = "#B0BEC5"  # Gray
+                    elif source == "JLN":
+                        cube_color = "#03A9F4"  # Blue
+                    else:
+                        cube_color = "#4CAF50"  # Default green
+
+                    # Create the colored cube for the source
+                    source_html = f'<span style="background-color:{cube_color}; display:inline-block; width:20px; height:20px; margin-right:5px;"></span>{source}'
+
+                    st.markdown(
+                        f'<div style="font-size:18px; font-weight:bold;">🔸 {product_html} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>',
+                        unsafe_allow_html=True,
+                    )
+                    st.progress(progress)
+                    st.markdown(
+                        f'<div style="font-size:18px; font-weight:bold; text-align:center;">{percentage:.2f}% Chargé | Source de chargement actuel 🏗️ : {source_html}</div>',
+                        unsafe_allow_html=True,
+                    )
