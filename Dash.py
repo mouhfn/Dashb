@@ -11,8 +11,7 @@ import openpyxl
 import pandas as pd
 import re
 from datetime import datetime, time, timedelta
-
-
+st.autorefresh(interval=10000, limit=None, key="auto_refresh")
 
 def normalize_product_name(name):
     if not name:
@@ -169,9 +168,7 @@ sheet_name = effective_date.strftime("%d-%m-%Y")
 # Nouvelle version utilisant le lien en ligne
 excel_url = "https://eocp-my.sharepoint.com/personal/mouad_elhafiani_ocpgroup_ma/_layouts/15/download.aspx?share=EW83yQHE4YdElMWYtV52Ii0BNrLL5-3KGGclpOgKaRA7UA"
 
-# Bouton pour rafraîchir les données (relance l'application)
-if st.button("🔄 Rafraîchir les données"):
-    st.rerun()
+
 
 # Charger le fichier Excel via le lien en ligne
 xls = pd.ExcelFile(excel_url)
