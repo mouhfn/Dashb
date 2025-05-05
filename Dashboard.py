@@ -217,6 +217,71 @@ print(loading_data)
 # Afficher les données dans le tableau de bord
 page = st.sidebar.selectbox(
     "Navigation",
+if page == "Suivi de chargement":
+    st.markdown(
+    f"""
+    <div style='display:flex; justify-content:space-between; align-items:center;'>
+        <h3 style="font-size:24px; margin:0;">🚢 Suivi de chargement en temps réel</h3>
+        <span style="font-size:20px;color:#FFFFFF; background-color:#F7374F; padding:6px 12px; border-radius:8px;">
+            Total Chargé : <strong>{total_charge} t</strong>
+        </span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+    # Diviser la page en deux colonnes : Quai 1 (gauche) et Quai 2 (droite)
+    col1, col2 = st.columns(2)
+
+    # Afficher les quais de gauche (1NORD, 1BIS, 1TER)
+    with col1:
+        st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 1</h4>', unsafe_allow_html=True)
+        for quai, info in loading_data.items():
+            if quai.startswith("1"):  # Filtrer les quais de gauche
+                # Vérifier si le quai a un navire
+                if not info["ship"] or pd.isna(info["ship"]):  # Si pas de navire
+                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>', unsafe_allow_html=True)
+                    for product, stats in info["products"].items():
+                        progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
+                        percentage = progress * 100
+                        source = stats["Source"]
+                        if source == "JFC1":
+                            color = "#FFEB3B"  # Jaune
+                        elif source == "JFC2":
+                           color = "#FFEB3B"  # Gris
+                        elif source == "JLN":
+                           color = "#FFEB3B"  # Jaune
+                        else:
+                           color = "#4CAF50"
+                        st.markdown(f'<div style="font-size:14px;">🔸 Qualité 🌾 : {product} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>', unsafe_allow_html=True)
+                        st.progress(progress)
+                    
+                        st.markdown(f'<div style="font-size:14px; text-align:center;">{percentage:.2f}% Chargé| Source de chargement actuel  🏗️ : {stats["Source"]}</div>', unsafe_allow_html=True)
+                        
+                st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
+
+    # Afficher les quais de droite (2NORD, 2SUD, 2BIS, 2TER)
+    with col2:
+        st.markdown('<h4 style="margin-bottom:10px;">🧭 Quais - 2</h4>', unsafe_allow_html=True)
+        for quai, info in loading_data.items():
+            if quai.startswith("2"):  # Filtrer les quais de gauche
+                # Vérifier si le quai a un navire
+                if not info["ship"] or pd.isna(info["ship"]):  # Si pas de navire
+                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – 🚩 Quai Libre</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div style="font-size:18px; font-weight:bold;">Quai {quai} – Navire : {info["ship"]}</div>', unsafe_allow_html=True)
+                    for product, stats in info["products"].items():
+                        progress = stats["loaded"] / stats["target"] if stats["target"] > 0 else 0
+                        percentage = progress * 100
+                        
+                        st.markdown(f'<div style="font-size:14px;">🔸 Qualité 🌾 : {product} | Chargé ✅ : {stats["loaded"]} / {stats["target"]} t | Dernière heure 🕒 : {stats["last_hour"]} t </div>', unsafe_allow_html=True)
+                        st.progress(progress)
+                        st.markdown(f'<div style="font-size:14px; text-align:center;">{percentage:.2f}% Chargé| Source de chargement actuel  🏗️ : {stats["Source"]}</div>', unsafe_allow_html=True)
+                st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
     ["Suivi de chargement", "Planification", "Stock","Navires en Rade","CTE"]
 )
 
