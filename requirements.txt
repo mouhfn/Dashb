@@ -3,5 +3,5 @@ pandas
 plotly
 openpyxl
 numpy
-matplotlib.pyplot
+
 
