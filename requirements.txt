@@ -3,3 +3,7 @@ pandas
 plotly
 openpyxl
 numpy
+matplotlib.pyplot
+base64
+datetime
+athlib
