@@ -670,7 +670,6 @@ elif page == "Navires en Rade":
     from pathlib import Path
     from io import BytesIO
     from openpyxl import load_workbook
-    import matplotlib.pyplot as plt
 
     def extract_all_ships_data1(file, sheet_name="Feuil1"):
         """Extracts data for all waiting ships in an Excel file, grouped by normalized product type."""
